@@ -8,27 +8,28 @@ import java.util.Random;
 import java.util.Stack;
 
 public class SolidSnake extends JPanel {
-    int x = 0;
-    int y = 0;
-    static int DIRECTION = 0;
+    int score =0; //Score of the player
+    Random random = new Random();
+    static int DIRECTION = 0; // Direction int 0 = right, 1= left , 2 = top, 3 = bottom
     Random rand = new Random();
-    ArrayList<Pair> body = new ArrayList<Pair>();
-    Pair food = new Pair(50, 50);
+    ArrayList<Pair> body = new ArrayList<Pair>(); //array which stores snakes co ordinates
+    Pair food = new Pair(30, 50);  //location of the food
     boolean gameover =false;
 
     private void moveBall() {
 
     }
 
-    public int randomWithRange(int max, int min) {
+    public int randomWithRange(int min, int max) {
         int range = (max - min) + 1;
-        return (int) Math.random() * range + min;
+        return (int) random.nextInt(range) + min;
     }
 
+    //Random function that generates food
     public void setValidRange() {
         while (true) {
-            int x = randomWithRange(0, 38) * 10;
-            int y = randomWithRange(0, 38) * 10;
+            int x = randomWithRange(0, 35) * 10;
+            int y = randomWithRange(0, 35) * 10;
 
             Pair p = new Pair(x, y);
             if (!body.contains(p)) {
@@ -40,9 +41,11 @@ public class SolidSnake extends JPanel {
 
     }
 
+    //check if snake has collided with food
     public boolean detectCollision(int topx, int topy) {
         if (topx == food.getFi() && topy == food.getSe()) {
             setValidRange();
+            score = score + 10;
             return true;
         }
 
@@ -58,13 +61,13 @@ public class SolidSnake extends JPanel {
 
     }
 
-
+    // print snake food
     private void spwanFood(Pair food, Graphics2D g2d) {
         g2d.setColor(Color.BLACK);
         g2d.fillRect(food.getFi() + 1, food.getSe(), 9, 9);
     }
 
-
+    //print snakes body
     public void printSnake(ArrayList<Pair> snake, Graphics2D g2d) {
         for (int i = 0; i < snake.size(); i++) {
             g2d.setColor(Color.BLACK);
@@ -72,6 +75,7 @@ public class SolidSnake extends JPanel {
         }
     }
 
+    //initialize the snake with length 3
     public void init() {
         body.add(new Pair(0, 0));
         body.add(new Pair(10, 0));
@@ -79,6 +83,7 @@ public class SolidSnake extends JPanel {
 
     }
 
+    //check if snake goes out of bounds
     public int modulus(int x) {
         if (x >= 400)
             x = 0;
@@ -88,6 +93,7 @@ public class SolidSnake extends JPanel {
 
     }
 
+    //Snake Traversal
     public void traversal() {
         if (body.size() > 0) {
 
@@ -144,6 +150,15 @@ public class SolidSnake extends JPanel {
 
     }
 
+    public void paintGameOver(Graphics g){
+        super.paint(g);
+        Font font =new Font(Font.SANS_SERIF,Font.BOLD,25);
+        g.setFont(font);
+        g.setColor(Color.RED);
+        g.drawString("Game Over",120,100);
+        g.drawString("Your Score: "+Integer.toString(score),110,150);
+    }
+
     public static void main(String args[]) {
         SolidSnake snake = new SolidSnake();
         snake.init();
@@ -153,6 +168,7 @@ public class SolidSnake extends JPanel {
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jFrame.setVisible(true);
         jFrame.setResizable(false);
+        Graphics g = jFrame.getGraphics();
         jFrame.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -199,11 +215,12 @@ public class SolidSnake extends JPanel {
                 e.printStackTrace();
             }
         }
+        snake.paintGameOver(g);
     }
 
 
 }
-
+//pair class to maintain  x and y co ordinates of the snakes
 class Pair {
     private Integer fi;
     private Integer se;
